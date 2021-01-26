@@ -1,5 +1,6 @@
 from flask_restful import Resource, reqparse
 from models.Users import Users
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class UserRegister(Resource):
@@ -24,7 +25,7 @@ class UserRegister(Resource):
         if Users.find_by_username(data['username']):
             return {"message": "A user with that username already exists"}, 400
 
-        user = Users(data['username'], data['password'])
+        user = Users(data['username'], generate_password_hash(data['password']))
         user.save_to_db()
 
         return {"message": "User created successfully."}, 201
