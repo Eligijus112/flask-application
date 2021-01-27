@@ -6,7 +6,7 @@ class LogisticModel(db.Model):
     __tablename__ = "logistic_model"
 
     id = db.Column(db.Integer, primary_key=True)
-    version = db.Column(db.String(20))
+    version = db.Column(db.String(20), index=True)
     feature = db.Column(db.String(120))
     coef = db.Column(db.Float())
 

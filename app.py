@@ -16,6 +16,7 @@ from configuration import config
 
 # Importing resources
 from resources.Users import UserRegister, AllUsers
+from resources.LogisticModel import GetPrediction
 
 # Import database connetion
 from db import db
@@ -38,6 +39,7 @@ db.init_app(app)
 # Registering resources 
 api.add_resource(UserRegister, '/register')
 api.add_resource(AllUsers, '/users')
+api.add_resource(GetPrediction, '/<string:version>')
 
 # Running the application 
 if __name__ == '__main__':
