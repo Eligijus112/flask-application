@@ -4,6 +4,9 @@ from flask import request
 import numpy as np 
 import pickle 
 import pandas as pd
+from models.Users import Users
+from hashlib import md5
+import os 
 
 model_dicts = {
     'v1': pickle.load(open(f"LRmodels/model_v1.sav", 'rb')),
@@ -14,6 +17,17 @@ model_dicts = {
 class GetPrediction(Resource):
 
     def get(self, version):
+        # Checking if the correct credentials are sent in the request form
+        usr = Users.query.filter_by(username=request.form.get("username")).first()
+
+        if not usr:
+            return {"message": "User not found"}, 400
+
+        psw_hash = md5(f"{request.form.get('password')}{os.environ['SECRET_KEY']}".encode()).hexdigest()
+        if usr.password != psw_hash:
+            return {"message": "User password is incorect"}, 400
+
+        # Getting the GET arguments 
         args = request.args
 
         # Getting the model version 
