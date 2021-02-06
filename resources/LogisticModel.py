@@ -2,6 +2,13 @@ from flask_restful import Resource, reqparse
 from models.LogisticModel import LogisticModel 
 from flask import request
 import numpy as np 
+import pickle 
+import pandas as pd
+
+model_dicts = {
+    'v1': pickle.load(open(f"LRmodels/model_v1.sav", 'rb')),
+    'v2': pickle.load(open(f"LRmodels/model_v2.sav", 'rb'))
+}
 
 
 class GetPrediction(Resource):
@@ -10,17 +17,33 @@ class GetPrediction(Resource):
         args = request.args
 
         # Getting the model version 
-        model = LogisticModel.query.filter_by(version=version).all()
+        model = model_dicts.get(version)
 
-        # Getting the features - coef dict 
-        modelDict = {x.feature : x.coef for x in model if x.feature!='intercept'} 
+        # Getting the feature names 
+        features_names = model.feature_names
 
-        # Forecasting 
+        # Preprocesing input
+        input_frame = pd.DataFrame(args, index=[0])
+
+        # Cheking if all values are present 
+        if input_frame.isnull().values.any():
+            return 'Some input values are NaN', 422
+
+        # Ensuring that there are no missing features used in the model creation 
+        if len(set(input_frame.columns).intersection(set(features_names))) != len(features_names):
+            return 'Missing some features; please refer to API docs', 422
+
+        # Ensuring that the features have the same order as in the model creation phase
+        input_frame = input_frame[features_names]
+
+        # Converting to appropriate types 
         try:
-            x = np.sum([float(args.get(x)) * modelDict.get(x) for x in modelDict.keys()])
-            x += [x.coef for x in model if x.feature=='intercept'][0]
-            p = 1 / (1 + np.exp(-x))
+            input_frame = input_frame.astype(float)
+        except Exception as e: 
+            return "Cannot convert to float some features", 422
 
-            return {'probability': p}, 200 
-        except Exception as e:
-            return {'error': str(e)}, 400
+        # Getting the probability of a heart attack
+        p = model.predict_proba(input_frame)[0][1]
+
+        # Returning the probability
+        return {'probability': p}, 200 

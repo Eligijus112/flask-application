@@ -39,7 +39,7 @@ db.init_app(app)
 # Registering resources 
 api.add_resource(UserRegister, '/register')
 api.add_resource(AllUsers, '/users')
-api.add_resource(GetPrediction, '/<string:version>')
+api.add_resource(GetPrediction, '/<string:version>/predict')
 
 # Running the application 
 if __name__ == '__main__':

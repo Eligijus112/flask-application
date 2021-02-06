@@ -68,3 +68,17 @@ To run the application in a testing environment run:
 ```
 python app.py 
 ```
+
+# Endpoints 
+
+## \<version>/predict 
+
+Predicts the probability of a hear attack given a set of feature values. 
+
+### v1/predict 
+
+Features needed: heartRate, glucose, BMI, totChol, cigsPerDay
+
+### v2/predict 
+
+Features needed: heartRate, glucose, BMI, totChol, cigsPerDay, age
