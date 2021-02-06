@@ -2,11 +2,17 @@
 
 Putting everything together from this course: https://www.udemy.com/course/rest-api-flask-and-python
 
-# Flask application use
+# Project summary 
 
-This flask application stores a logistic regression model in a database table as a list of features and coefficient values and returns a probability via a GET request.
+This project uses Flask as a basis to create a REST API to serve a machine learning model. 
+
+This flask application stores a logistic regression model in a database table as a list of features and coefficient values and returns a probability via a GET request. 
+
+Additionally, all the requests are tracked and stored in a database as well. 
 
 # Activating the virtual environment
+
+## With anaconda 
 
 ```
 conda create python=3.7 flask-api
@@ -20,47 +26,45 @@ conda activate flask-api
 pip install -r requirements.txt
 ```
 
-# Definitions
+## With virtualenv
 
-Web server - a piece of software designed to accept incoming web requests.
+```
+virtualenv flask-api
+```
 
-HTTP verbs - request methods to indicate the desired action to be performed for a given resource.
+```
+source flask-api/bin/activate
+```
 
-## Different HTTP verbs
+```
+pip install -r requirements.txt
+```
 
-GET
-The GET method requests a representation of the specified resource. Requests using GET should only retrieve data.
+# Logistic regression model 
 
-HEAD
-The HEAD method asks for a response identical to that of a GET request, but without the response body.
+The model is created using the data regarding heart diseases. The project that creates the model can be found via: https://github.com/Eligijus112/heart-disease-model 
 
-POST
-The POST method is used to submit an entity to the specified resource, often causing a change in state or side effects on the server.
+# Configurations 
 
-PUT
-The PUT method replaces all current representations of the target resource with the request payload.
+The configurations for the application are stored in a file **.env**. An example file with all the keys is stored in **.env-example** file. 
 
-DELETE
-The DELETE method deletes the specified resource.
+The cofiguration file includes the port, host name, secret key and other attributes. 
 
-CONNECT
-The CONNECT method establishes a tunnel to the server identified by the target resource.
+When developing the application, make sure to set the **ENV** parameter to *Dev*.
 
-OPTIONS
-The OPTIONS method is used to describe the communication options for the target resource.
+Example contents of .env file:
 
-TRACE
-The TRACE method performs a message loop-back test along the path to the target resource.
+```
+SECRET_KEY=hello
+PORT=5000
+HOST=0.0.0.0
+ENV=Dev
+```
 
-PATCH
-The PATCH method is used to apply partial modifications to a resource.
+# Launching the application 
 
-REST API - a way of thinking about how a web server responds to your requests.
+To run the application in a testing environment run:
 
-Some features of a REST API:
-
-* The response is not just data but a resource.
-
-* The API is stateless, meaning, one request cannot depend on any other request.
-
-Test first design - Defining the tests/api calls BEFORE starting typing code for API implementation.
+```
+python app.py 
+```
