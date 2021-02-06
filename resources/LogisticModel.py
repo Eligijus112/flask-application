@@ -5,8 +5,10 @@ import numpy as np
 import pickle 
 import pandas as pd
 from models.Users import Users
+from models.Requests import Requests, RequestsInfo
 from hashlib import md5
 import os 
+import datetime
 
 model_dicts = {
     'v1': pickle.load(open(f"LRmodels/model_v1.sav", 'rb')),
@@ -58,6 +60,21 @@ class GetPrediction(Resource):
 
         # Getting the probability of a heart attack
         p = model.predict_proba(input_frame)[0][1]
+
+        # Saving the information to the requests table 
+        req = Requests(usr.id, datetime.datetime.now())
+        req.save_to_db()
+
+        # Saving a more in depth information about request 
+        input_frame = input_frame.melt()
+        for _, row in input_frame.iterrows():
+            obj = RequestsInfo(
+                req.id, 
+                version,
+                row['variable'],
+                row['value']
+            )
+            obj.save_to_db()
 
         # Returning the probability
         return {'probability': p}, 200 
