@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 from configuration import config
 
 # Importing resources
-from resources.Users import UserRegister, AllUsers
+from resources.Users import UserRegister, User
 from resources.LogisticModel import GetPrediction
 
 # Import database connetion
@@ -38,7 +38,7 @@ db.init_app(app)
 
 # Registering resources 
 api.add_resource(UserRegister, '/register')
-api.add_resource(AllUsers, '/users')
+api.add_resource(User, '/user')
 api.add_resource(GetPrediction, '/<string:version>/predict')
 
 # Running the application 
