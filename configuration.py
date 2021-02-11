@@ -13,16 +13,20 @@ load_dotenv(dotenv_path)
 class Config:
     DEBUG = True
     SECRET_KEY = os.environ.get('SECRET_KEY')
-
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 class Prod(Config):
+    PS_HOST = os.environ.get('POSTGRE_HOST')
+    PS_DB = os.environ.get('POSTGRE_DB')
+    PS_PSW = os.environ.get('POSTGRE_PASSWORD')
+    PS_PORT = os.environ.get('POSTGRE_PORT')
+    SQLALCHEMY_DATABASE_URI = f"""postgresql://postgres:{PS_PSW}@{PS_HOST}:{PS_PORT}/{PS_DB}"""
     DEBUG = False
 
 
 class Dev(Config):
     SQLALCHEMY_DATABASE_URI = f"""sqlite:///data.db"""
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-
+    
 
 # Creating the configuration object 
 config = {
