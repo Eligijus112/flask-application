@@ -82,3 +82,29 @@ Features needed: heartRate, glucose, BMI, totChol, cigsPerDay
 ### v2/predict 
 
 Features needed: heartRate, glucose, BMI, totChol, cigsPerDay, age
+
+# Manager commands 
+
+The manage commands can be activated using the manage.py script. 
+
+## Uploading the model version to server 
+
+To upload a specific version of a model in a form feature and coefficient pairs use the command:
+
+```
+python manage.py add_model <version>
+```
+
+# Installing Postgres to server 
+
+The database that stores data about requests to the API is stored in Postgres database. The installation procedure can be found here: 
+
+https://www.digitalocean.com/community/tutorials/how-to-install-postgresql-on-ubuntu-20-04-quickstart 
+
+# Running the application using gunicorn and nginx 
+
+The requests are handled and routed by nginx in the server. The application is served using gunicorn. 
+
+The full walkthrough is as follows: 
+
+https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-gunicorn-and-nginx-on-ubuntu-18-04
