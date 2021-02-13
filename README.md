@@ -73,7 +73,13 @@ python app.py
 
 ## \<version>/predict 
 
-Predicts the probability of a hear attack given a set of feature values. 
+Predicts the probability of a hear attack given a set of feature values. The request type is **GET**. Features are passed as URL parameters. 
+
+For example:
+
+```
+localhost:5000/v1/predict?heartRate=120&glucose=255&BMI=50&totChol=130&cigsPerDay=20&age=55
+```
 
 ### v1/predict 
 
