@@ -16,17 +16,6 @@ model_dicts = {
 }
 
 
-class GetGreetingPage(Resource):
-
-    def get(self):
-        greeting_text = f"""
-        Hello and welcome to the heart failure API. 
-        
-        There are currently {len(model_dicts)} versions, accesible by {[f"/{x}/predict/" for x in model_dicts.keys()]} GET request 
-        """
-
-        return {'message': greeting_text}
-
 class GetPrediction(Resource):
 
     def get(self, version):
