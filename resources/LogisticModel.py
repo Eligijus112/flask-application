@@ -19,13 +19,17 @@ model_dicts = {
 class GetPrediction(Resource):
 
     def get(self, version):
+        # Getting username and password 
+        username = request.args.get("username", request.form.get("username"))
+        password = request.args.get("password", request.form.get("password"))
+
         # Checking if the correct credentials are sent in the request form
-        usr = Users.query.filter_by(username=request.form.get("username")).first()
+        usr = Users.query.filter_by(username=username).first()
 
         if not usr:
             return {"message": "User not found"}, 400
 
-        psw_hash = md5(f"{request.form.get('password')}{os.environ['SECRET_KEY']}".encode()).hexdigest()
+        psw_hash = md5(f"{password}{os.environ['SECRET_KEY']}".encode()).hexdigest()
         if usr.password != psw_hash:
             return {"message": "User password is incorect"}, 400
 
