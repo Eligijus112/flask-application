@@ -4,6 +4,7 @@ import os
 # Importing FLASK packages
 from flask import Flask
 from flask_restful import Api
+from flask_cors import CORS
 
 # SQL alchemy connector 
 from flask_sqlalchemy import SQLAlchemy
@@ -26,6 +27,9 @@ load_dotenv('.env')
 
 # Initiating the application
 app = Flask(__name__)
+
+# Enabling CORS
+CORS(app)
 
 # Loading configuration 
 app.config.from_object(config[os.environ['ENV']])
