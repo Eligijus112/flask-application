@@ -12,7 +12,8 @@ import datetime
 
 model_dicts = {
     'v1': pickle.load(open(f"LRmodels/model_v1.sav", 'rb')),
-    'v2': pickle.load(open(f"LRmodels/model_v2.sav", 'rb'))
+    'v2': pickle.load(open(f"LRmodels/model_v2.sav", 'rb')),
+    'v3': pickle.load(open(f"LRmodels/model_v3.sav", 'rb'))
 }
 
 
@@ -42,12 +43,27 @@ class GetPrediction(Resource):
         # Getting the feature names 
         features_names = model.feature_names
 
+        # Categorical features 
+        categorical_features = model.categorical_features
+
         # Preprocesing input
         input_frame = pd.DataFrame(args, index=[0])
+
+        # Leaving only the present categorical features 
+        categorical_features = set(categorical_features).intersection(set(input_frame.columns))
+
+        # Creating additional categorical feature values 
+        for categorical_feature in categorical_features:
+            input_frame[f'{categorical_feature}_{input_frame[categorical_feature].values[0]}'] = 1
 
         # Cheking if all values are present 
         if input_frame.isnull().values.any():
             return 'Some input values are NaN', 422
+
+        # Filling missing categorical features 
+        missing_cols = set(features_names) - set(input_frame.columns)
+        for col in missing_cols:
+            input_frame[col] = 0 
 
         # Ensuring that there are no missing features used in the model creation 
         if len(set(input_frame.columns).intersection(set(features_names))) != len(features_names):
