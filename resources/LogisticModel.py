@@ -12,7 +12,8 @@ import datetime
 
 model_dicts = {
     'v1': pickle.load(open(f"LRmodels/model_v1.sav", 'rb')),
-    'v2': pickle.load(open(f"LRmodels/model_v2.sav", 'rb'))
+    'v2': pickle.load(open(f"LRmodels/model_v2.sav", 'rb')),
+    'v3': pickle.load(open(f"LRmodels/model_v3.sav", 'rb'))
 }
 
 
@@ -39,19 +40,55 @@ class GetPrediction(Resource):
         # Getting the model version 
         model = model_dicts.get(version)
 
-        # Getting the feature names 
+        # Getting the feature names; These feature names need to be present in order to get 
+        # predictions 
         features_names = model.feature_names
 
         # Preprocesing input
         input_frame = pd.DataFrame(args, index=[0])
 
+        # Extracting categorical feature list  
+        categorical_features = []
+        try:
+            categorical_features = model.categorical_features
+
+            # Checking if all the categorical features are present in the request
+            missing_categoricals = set(categorical_features) - set(input_frame.columns)
+            if len(missing_categoricals) > 0:
+                return {"message": f"Missing the following categorical features: {missing_categoricals}"}, 400
+        except: 
+            pass 
+
+        # Extracting numerical feature list 
+        numeric_features = []
+        try:
+            numeric_features = model.numeric_features
+
+            # Checking if all the numeric features are present in the request
+            numeric_features = set(numeric_features) - set(input_frame.columns)
+            if len(numeric_features) > 0:
+                return {"message": f"Missing the following numeric features: {numeric_features}"}, 400
+        except: 
+            pass
+
+        # Dealing with categorical variables if the model has them 
+        if len(categorical_features)!=0:
+            
+            # Getting the categorical features sent in request 
+            categorical_features_sent = set(categorical_features).intersection(set(input_frame.columns))
+
+            # Creating additional categorical feature values 
+            for feature in categorical_features_sent:
+                input_frame[f'{feature}_{input_frame[feature].values[0]}'] = 1
+
         # Cheking if all values are present 
         if input_frame.isnull().values.any():
             return 'Some input values are NaN', 422
 
-        # Ensuring that there are no missing features used in the model creation 
-        if len(set(input_frame.columns).intersection(set(features_names))) != len(features_names):
-            return 'Missing some features; please refer to API docs', 422
+        # Filling missing feature values; This will only adjust the categorical features 
+        missing_cols = set(features_names) - set(input_frame.columns)
+        for col in missing_cols:
+            input_frame[col] = 0 
 
         # Ensuring that the features have the same order as in the model creation phase
         input_frame = input_frame[features_names]
@@ -60,7 +97,7 @@ class GetPrediction(Resource):
         try:
             input_frame = input_frame.astype(float)
         except Exception as e: 
-            return "Cannot convert to float some features", 422
+            return f"Cannot convert to float some features {e}", 422
 
         # Getting the probability of a heart attack
         p = model.predict_proba(input_frame)[0][1]
